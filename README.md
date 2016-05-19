@@ -37,7 +37,7 @@ Now that we've made our basic files, we want to get them all hooked together in 
 #Step 2
 ###Time For jQuery
 
-Now that we have our environment set up and our markup written, it's time to get use some jQuery. 
+Now that we have our environment set up and our markup written, it's time to use some jQuery. 
 
 The first thing we want to do is go into our scripts.js file and create our document ready function:
 
@@ -107,9 +107,7 @@ Let's make a function to do that for us.
 var addTask = function(task) {};
 ```
 
-We don't want people to be able to create blank
-
-todo tasks, that would be a little frustrating. Let's put a conditional in the function so that it only runs if our task is there.
+We don't want people to be able to create blank tasks, that would be a little frustrating. Let's put a conditional in the function so that it only runs if our task is there.
 
 *scripts.js*
 ```javascript
@@ -119,7 +117,7 @@ var addTask = function(task) {
 };
 ```
 
-Now our code will only run if 'task' is "truthy." Empty tasks are not truthy since they're just empty strings. 
+Now our code will only run if 'task' is "truthy". Empty tasks are not truthy since they're just empty strings. 
 
 Next, we want to call our task constructor and fill it with the new task, then we will push the new task to listo, and save it.
 
@@ -190,7 +188,7 @@ var addTask = function(task) {
                     );
 
 	}
-	 $('#newTaskForm).slideToggle('fast', 'linear');
+	 $('#newTaskForm').slideToggle('fast', 'linear');
 
 };
 ```
@@ -212,12 +210,12 @@ Finally, let's make it so that we can open and close the new task form with the 
 ```javascript
 //Opens form
   $('#add-todo').on('click', function () {
-      $('#newTaskForm).fadeToggle('fast', 'linear');
+      $('#newTaskForm').fadeToggle('fast', 'linear');
   });
   //closes form
   $('#cancel').on('click', function (e) {
       e.preventDefault();
-      $('#newTaskForm).fadeToggle('fast', 'linear');
+      $('#newTaskForm').fadeToggle('fast', 'linear');
   });
 ```
 
