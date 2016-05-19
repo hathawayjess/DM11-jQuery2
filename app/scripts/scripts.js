@@ -6,9 +6,12 @@ $(document).ready(function() {
    		 if (listo[i].task === modified) {
     	  if (listo[i].id === 'new') {
        		 listo[i].id = 'inProgress';
+       		 updateStorage(listo[i]);
      	 } else if (listo[i].id === 'inProgress') {
      	     listo[i].id = 'archived';
-     	 } else {
+     	     updateStorage(listo[i]);
+     	 } else { //if task has no id, remove it
+     	 	localStorage.removeItem(listo[i].task);
      	   listo.splice(i, 1);
     	  }
       break;
@@ -57,6 +60,12 @@ $(document).ready(function() {
 		if (task) {                //ensures users don't create blank tasks
 			task = new Task(task); //constructs new task object,
 			listo.push(task);	   //pushes to list array
+			updateStorage(task);  //adds task to localStorage object
+    		if (localStorage['taskArray']) { //if there is already a task array
+      		  localStorage['taskArray'] += "." + task.task; //add new task to it
+      		} else {
+      		  localStorage['taskArray'] = task.task; //if not, create new task
+     		 }
 
 			$('#newItemInput').val('');  //clear input after submitting it
 			$('#newList').append(
@@ -91,4 +100,36 @@ $(document).ready(function() {
 		$('#newTaskForm').fadeToggle('fast', 'linear');
 	});
 
+
+
+	 var updateStorage = function(task) {
+  	  if (localStorage[task.task]) {
+      	localStorage.setItem(task.task, task.task + "." + task.id)
+   	  } else {
+      	localStorage[task.task] = task.task + "." + task.id;
+   	  }
+  	}
+
+  	 // If local storage exists, retrieve it and call addTask on each item.
+ 	 var retrieveStorage = function() {
+    if (!localStorage['taskArray']) { return }
+    var arr = localStorage['taskArray'].split('.');
+    var appendTask =
+    arr.forEach(function(item) {
+      if (item === "undefined") { return }
+      if (!localStorage[item]) { return }
+      var itemO = localStorage[item];
+      var objArr = itemO.split('.');
+      var task = new Task(objArr[0], objArr[1]);
+      listo.push(task);
+      if (task.id === 'new') {
+        $('#newList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
+      } else if (task.id === 'inProgress') {
+        $('#currentList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
+      } else if (task.id === 'archived'){
+        $('#archivedList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
+
+      }
+    })
+  }
 })
