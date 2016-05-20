@@ -6,13 +6,13 @@ $(document).ready(function() {
    		 if (listo[i].task === modified) {
     	  if (listo[i].id === 'new') {
        		 listo[i].id = 'inProgress';
-       		 updateStorage(listo[i]);
+       		 updateStorage(); //update localStorage
      	 } else if (listo[i].id === 'inProgress') {
      	     listo[i].id = 'archived';
-     	     updateStorage(listo[i]);
+     	     updateStorage(); //update localStorage
      	 } else { //if task has no id, remove it
-     	 	localStorage.removeItem(listo[i].task);
      	   listo.splice(i, 1);
+             updateStorage(); //update localStorage
     	  }
       break;
   	      }
@@ -49,7 +49,7 @@ $(document).ready(function() {
 
 	$('#newTaskForm').hide(); //hides newTaskForm when page loads
 
-	var listo = [];  //main array for storing tasks
+	var listo = ['empty string'];  //main array for storing tasks
 
 	var Task = function(task) {  //constructor function for tasks
 		this.task = task;
@@ -60,12 +60,7 @@ $(document).ready(function() {
 		if (task) {                //ensures users don't create blank tasks
 			task = new Task(task); //constructs new task object,
 			listo.push(task);	   //pushes to list array
-			updateStorage(task);  //adds task to localStorage object
-    		if (localStorage['taskArray']) { //if there is already a task array
-      		  localStorage['taskArray'] += "." + task.task; //add new task to it
-      		} else {
-      		  localStorage['taskArray'] = task.task; //if not, create new task
-     		 }
+			updateStorage();  //adds task to localStorage object
 
 			$('#newItemInput').val('');  //clear input after submitting it
 			$('#newList').append(
@@ -102,34 +97,25 @@ $(document).ready(function() {
 
 
 
-	 var updateStorage = function(task) {
-  	  if (localStorage[task.task]) {
-      	localStorage.setItem(task.task, task.task + "." + task.id)
-   	  } else {
-      	localStorage[task.task] = task.task + "." + task.id;
-   	  }
+	 var updateStorage = function() {
+  	 localStorage.removeItem('listo'); //remove listo array so it can be replaced
+     localStorage.setItem('listo', JSON.stringify(listo)); //localStorage only works with strings
   	}
 
   	 // If local storage exists, retrieve it and call addTask on each item.
  	 var retrieveStorage = function() {
-    if (!localStorage['taskArray']) { return }
-    var arr = localStorage['taskArray'].split('.');
-    var appendTask =
-    arr.forEach(function(item) {
-      if (item === "undefined") { return }
-      if (!localStorage[item]) { return }
-      var itemO = localStorage[item];
-      var objArr = itemO.split('.');
-      var task = new Task(objArr[0], objArr[1]);
-      listo.push(task);
-      if (task.id === 'new') {
-        $('#newList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
-      } else if (task.id === 'inProgress') {
-        $('#currentList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
-      } else if (task.id === 'archived'){
-        $('#archivedList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
+      listo = JSON.parse(localStorage.getItem('listo'));   //must parse string
 
-      }
-    })
+    		listo.forEach(function(task) {
+		      if (task.id === 'new') {
+		        $('#newList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
+		      } else if (task.id === 'inProgress') {
+		        $('#currentList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
+		      } else if (task.id === 'archived'){
+		        $('#archivedList').append('<a href="#finish" class="" id="item"><li class="list-group-item">' + task.task + '<span class="arrow pull-right"><i class="glyphicon glyphicon-arrow-right"></span></li></a>');
+
+		      }
+    	})
   }
+  retrieveStorage(); //retrieve local storage on page load
 })
